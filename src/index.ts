@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { chatRouter } from './routes/chat';
 import voiceRouter from './routes/voice';
+import { livekitRouter } from './routes/livekit'; // Add this line
 
 dotenv.config();
 
@@ -14,8 +15,10 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use('/api/chat', chatRouter);
 app.use('/api/voice', voiceRouter);
+app.use('/api/livekit', livekitRouter); // Add this line
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
