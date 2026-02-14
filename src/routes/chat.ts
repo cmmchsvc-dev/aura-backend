@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import { chatRateLimiter } from '../middleware/rateLimiter';
-import { chat, getGuidedExercise, detectCrisisLanguage, generateAudioResponse } from '../services/aiCompanion';
+import { chat, detectCrisisLanguage, generateAudioResponse } from '../services/aiCompanion';
 import { triggerCrisisCircle } from '../services/crisisDetection';
 import { getFirestore } from '../services/firebase';
 
@@ -119,10 +119,9 @@ chatRouter.get('/conversations', async (req: AuthenticatedRequest, res: Response
   }
 });
 
-// Get guided exercise
+// Get guided exercise (Logic removed to match clean aiCompanion.ts)
 chatRouter.post('/exercise', validate(exerciseSchema), async (req: AuthenticatedRequest, res: Response) => {
-  const content = getGuidedExercise(req.body.type);
-  res.json({ content, type: req.body.type });
+  res.json({ content: "Guided exercises are temporarily unavailable while we update our cloud service.", type: req.body.type });
 });
 
 // Audio chat with Gemini 2.5 Flash native audio
@@ -133,7 +132,7 @@ const audioSchema = z.object({
 
 chatRouter.post('/audio', chatRateLimiter, validate(audioSchema), async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { audio, mimeType } = req.body;
+    const { audio } = req.body;
 
     // Check subscription limits
     const db = getFirestore();
@@ -160,8 +159,8 @@ chatRouter.post('/audio', chatRateLimiter, validate(audioSchema), async (req: Au
       }
     }
 
-    // Generate response with Gemini 2.5 Flash native audio
-    const result = await generateAudioResponse(audio, mimeType);
+    // Generate response (Updated to 1 argument to match clean service)
+    const result = await generateAudioResponse(audio);
 
     // Store audio message
     await db
