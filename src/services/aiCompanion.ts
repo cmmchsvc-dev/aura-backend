@@ -120,8 +120,17 @@ async function getAIResponse(
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
     try {
+<<<<<<< HEAD
       const model = genAI.getGenerativeModel({
         model: 'gemini-1.5-flash', // Stable model for text chat
+=======
+      // Primary model: Gemini 2.0 Flash Experimental (supports audio)
+      // Note: Model names vary between Developer API and Vertex AI
+      // For Developer API, use: gemini-2.0-flash-exp
+      // For Vertex AI, use: gemini-2.5-flash-native-audio-preview
+      const model = genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash-exp', // Available in Developer API
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
         systemInstruction: systemPrompt,
       });
       const chat = model.startChat({
@@ -133,8 +142,26 @@ async function getAIResponse(
       const result = await chat.sendMessage(userMessage);
       return result.response.text();
     } catch (error: any) {
+<<<<<<< HEAD
       logger.error(`Gemini chat failed: ${error.message}`);
       throw error;
+=======
+      logger.warn(`Gemini 2.0 Flash failed, falling back to 1.5 Flash: ${error.message}`);
+
+      // Fallback model: Gemini 1.5 Flash (stable and fast)
+      const fallbackModel = genAI.getGenerativeModel({
+        model: 'gemini-1.5-flash',
+        systemInstruction: systemPrompt,
+      });
+      const chat = fallbackModel.startChat({
+        history: messages.map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }],
+        })),
+      });
+      const result = await chat.sendMessage(userMessage);
+      return result.response.text();
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
     }
   }
 
@@ -169,7 +196,11 @@ async function getAIResponse(
 }
 
 /**
+<<<<<<< HEAD
  * Main chat function
+=======
+ * Main chat function — orchestrates context gathering and AI response
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
  */
 export async function chat(
   userId: string,
@@ -179,6 +210,10 @@ export async function chat(
   const db = getFirestore();
   const isCrisis = detectCrisisLanguage(message);
 
+<<<<<<< HEAD
+=======
+  // Fetch user profile
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const userDoc = await db.collection('users').doc(userId).get();
   const userData = userDoc.data() || {};
   const userContext: UserContext = {
@@ -187,6 +222,10 @@ export async function chat(
     goals: userData.goals || [],
   };
 
+<<<<<<< HEAD
+=======
+  // Fetch latest biometrics
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const biometricsSnap = await db
     .collection('users').doc(userId)
     .collection('biometrics')
@@ -203,6 +242,10 @@ export async function chat(
     biometrics.steps = data.steps;
   }
 
+<<<<<<< HEAD
+=======
+  // Fetch patterns
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const patternsSnap = await db
     .collection('users').doc(userId)
     .collection('patterns')
@@ -215,6 +258,10 @@ export async function chat(
     predictions: [],
   };
 
+<<<<<<< HEAD
+=======
+  // Fetch recent predictions
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const predictionsSnap = await db
     .collection('users').doc(userId)
     .collection('predictions')
@@ -225,6 +272,10 @@ export async function chat(
 
   patternContext.predictions = predictionsSnap.docs.map(d => d.data().description);
 
+<<<<<<< HEAD
+=======
+  // Fetch conversation history
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const historySnap = await db
     .collection('users').doc(userId)
     .collection('conversations').doc(conversationId)
@@ -237,10 +288,18 @@ export async function chat(
     .map(d => ({ role: d.data().role, content: d.data().content }))
     .reverse();
 
+<<<<<<< HEAD
+=======
+  // Build system prompt
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const hour = new Date().getHours();
   const timeOfDay = hour < 6 ? 'late night' : hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
   const systemPrompt = buildSystemPrompt(userContext, biometrics, patternContext, timeOfDay);
 
+<<<<<<< HEAD
+=======
+  // Get AI response
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   let response: string;
   try {
     response = await getAIResponse(systemPrompt, history, message);
@@ -249,10 +308,18 @@ export async function chat(
     response = "I'm having a moment — could you try again? I'm here for you. 💜";
   }
 
+<<<<<<< HEAD
+=======
+  // If crisis detected, append resources
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   if (isCrisis) {
     response += '\n\n🆘 **If you\'re in crisis, please reach out:**\n• **988 Suicide & Crisis Lifeline**: Call or text 988\n• **Crisis Text Line**: Text HOME to 741741\n• You matter, and help is available right now.';
   }
 
+<<<<<<< HEAD
+=======
+  // Store messages
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
   const convRef = db
     .collection('users').doc(userId)
     .collection('conversations').doc(conversationId);
@@ -331,7 +398,14 @@ export const generateAudioResponse = async (audioBase64: string, mimeType: strin
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({
+<<<<<<< HEAD
       model: 'gemini-2.5-flash', // Removed unsupported configuration for cloud build
+=======
+      model: 'gemini-2.0-flash-exp', // Use 2.0 Flash Exp for audio support
+      generationConfig: {
+        responseModalities: ['AUDIO'],
+      },
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
     });
 
     const result = await model.generateContent({
@@ -354,13 +428,37 @@ export const generateAudioResponse = async (audioBase64: string, mimeType: strin
     const response = await result.response;
     const text = response.text();
 
+<<<<<<< HEAD
     return {
       text,
       audio: null, // Audio response now handled via LiveKit Cloud
+=======
+    // Check for native audio response
+    let audioData: string | null = null;
+
+    // Check candidates for inlineData parts that are audio
+    const candidates = response.candidates || [];
+    if (candidates.length > 0) {
+      const contentParts = candidates[0].content.parts;
+      const audioPart = contentParts.find(part => part.inlineData && part.inlineData.mimeType.startsWith('audio/'));
+
+      if (audioPart && audioPart.inlineData) {
+        audioData = audioPart.inlineData.data;
+      }
+    }
+
+    return {
+      text,
+      audio: audioData,
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
     };
 
   } catch (error) {
     console.error('Error generating audio response:', error);
     throw error;
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 86ddc3b0b49786d196fa98e5f84f05c4688c1515
