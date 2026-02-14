@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { chatRouter } from './routes/chat';
-import voiceRouter from './routes/voice'; // No curly braces because voice.ts uses export default
+import voiceRouter from './routes/voice';
 
 dotenv.config();
 
@@ -14,7 +14,6 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.use('/api/chat', chatRouter);
 app.use('/api/voice', voiceRouter);
 
