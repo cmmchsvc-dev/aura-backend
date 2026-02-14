@@ -1,0 +1,12 @@
+
+> aura-backend@1.0.0 dev
+> tsx watch src/index.ts
+
+(node:2776) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🌌 Aura API running on port 3000 {"timestamp":"2026-02-14T00:46:50.278Z"}
+[LiveKit] Generated token for user-1771030006394 in room 1
+[LiveKit] Generated token for test-user in room 1
+[LiveKit] Generated token for user-1771030077855 in room 1
+[LiveKit] Generated token for user-1771030318596 in room 1
+[LiveKit] Generated token for user-1771030440558 in room 1
