@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { chatRouter } from './routes/chat';
-import voiceRouter from './routes/voice'; // Matches the 'export default' in voice.ts
+import voiceRouter from './routes/voice'; // No curly braces because voice.ts uses export default
 
 dotenv.config();
 
